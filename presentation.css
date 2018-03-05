@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css?family=Inconsolata|Source+Sans+Pro');
+
+body {
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 20px;
+}
+
+code {
+	font-family: 'Inconsolata', monospace;
+}
+
+.inverse {
+	background: #111;
+	color: #fff;
+}
+
+.remark-code,
+.remark-inline-code {
+	font-family: 'Inconsolata', monospace;
+}
+
+.footnote {
+	position: absolute;
+	bottom: 3em;
+}
+
+.remark-slide-content {
+	font-size: inherit;
+}
+
+.remark-slide-content h1 {
+	font-size: 275%; /* 55px */
+}
+
+.remark-slide-content h2 {
+	font-size: 225%; /* 45px */
+}
+
+.remark-slide-content h3 {
+	font-size: 175%; /* 35px */
+}
+
+.float {
+	float: left;
+}
