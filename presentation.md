@@ -267,3 +267,131 @@ async findOne(@User() user: UserEntity) {
 ```
 ???
 То можно создать свой, и выдернуть из объекта request нужные данные.
+---
+
+# Component
+```typescript
+import { Component } from '@nestjs/common';
+
+@Component()
+export class UsersService {
+    
+    private users = [
+        { id: 1, name: "John Doe" },
+        { id: 2, name: "Alice Caeiro" },
+        { id: 3, name: "Who Knows" },
+    ];
+
+    getAllUsers() {
+        return Promise.resolve(this.users);
+    }
+    
+    addUser(user) {
+        this.users.push(user);
+        return Promise.resolve();
+    }
+}
+```
+???
+Компоненты - это все остальное, т.е. сервисы, репозитории, фабрики, хелперы и т.п. Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты.  
+Вот мы сделали сервис пользователей, который умеет получать пользователей, здесь данные жетско закодированы, но на практике, здесь был бы какой-нибудь UserRepository компонент, который ходил бы хранилище (в базу данных) и получал данные.
+---
+
+# Let's use it
+```typescript
+@Controller('users')
+export class UsersController {
+    
+    constructor(private usersService: UsersService) { }
+
+    @Get()
+    async getAllUsers() {
+        const result = await this.usersService.getAllUsers();
+        return result;
+    }
+    
+    @Post()
+    async addUser(req, res) {
+        const msg = await this.usersService.getUser(req.body.user);
+        res.status(201).json(msg);
+    }
+```
+???
+И следующим образом можно использовать его в контрОллере.
+Из метода можно вернуть объект или массив, и результат будет автоматически преобразован в json, и будут выставлены соответствующие заголовки.
+Это второй и рекомендуемы способ выдачи ответа клиента.
+(На слайде 15 нерекомендуемый способ)
+---
+
+# Adding to Module
+```typescript
+import { Module } from '@nestjs/common';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+
+@Module({
+    controllers: [UsersController],
+    components: [UsersService],
+})
+export class ApplicationModule { }
+```
+---
+
+# Middlewares
+![](https://docs.nestjs.com/assets/Middlewares_1.png)
+Middleware is a function, which is called before route handler. Middleware functions can perform the following tasks:
+* Execute any code
+* Make changes to the request and the response objects
+* End the request-response cycle
+* Call the next middleware function in the stack
+* If the current middleware function does not end the request-response cycle, it must call next() to pass control to the next middleware function. Otherwise, the request will be left hanging
+???
+---
+
+# Middlewares
+```typescript
+import { Middleware, NestMiddleware, ExpressMiddleware } from '@nestjs/common';
+
+@Middleware()
+export class LoggerMiddleware implements NestMiddleware {
+  
+    resolve(...args: any[]): ExpressMiddleware {
+        return (req, res, next) => {
+            console.log('Request...');
+            next();
+        };
+    }
+
+}
+```
+???
+Мидлвар это класс с соответствующим декоратором @Middleware(), который должен имплементировать один метод resolve,
+и этот метод должен вернуть функцию.
+---
+
+# Middlewares
+
+```typescript
+import { Module, NestModule, RequestMethod } from '@nestjs/common';
+
+@Module({
+    // ...
+})
+export class ApplicationModule implements NestModule { 
+
+    configure(consumer: MiddlewaresConsumer): void {
+        consumer.apply(LoggerMiddleware).forRoutes(
+            { path: '/users', method: RequestMethod.GET },
+        );
+        // Or...
+        consumer.apply(LoggerMiddleware).forRoutes(UsersController);
+    }
+
+}
+```
+???
+Далее мы должны в нашем модуле добавить функцию configure, которая принимает какой-то контекст. И мы говорим контексту примени этот логгер мидлвар для роута которые начинаются со /users (слэш юзерс).
+(В мидлвары можно внедрять зависимости - компоненты)
+---
+
+# The pipes

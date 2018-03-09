@@ -45,3 +45,7 @@ Controllers: The controllers layer is responsible for handling incoming requests
 Components: Almost everything is a component – Service, Repository, Factory, Helper […] and they can be injected into controllers or into other components through constructor.
 ---
 
+
+# Nest v5 roadmap
+???
+https://github.com/nestjs/nest/pull/489

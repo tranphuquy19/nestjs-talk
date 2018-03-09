@@ -5,6 +5,10 @@ body {
 	font-size: 23px;
 }
 
+img {
+	max-width: 100%;
+}
+
 code {
 	font-family: 'Inconsolata', monospace;
 }
