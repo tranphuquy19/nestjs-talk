@@ -10,3 +10,4 @@
 * https://github.com/m24927605/Nestjs30Days/
 * https://matwrites.com/nestjs-typescript-nodejs-framework/
 * https://github.com/Caballerog/devfestmalaga2017
+* https://github.com/dannypule/hello-worlds-for-modern-web

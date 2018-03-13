@@ -312,8 +312,8 @@ export class UsersController {
     
     @Post()
     async addUser(req, res) {
-        const msg = await this.usersService.getUser(req.body.user);
-        res.status(201).json(msg);
+        const result = await this.usersService.addUser(req.body.user);
+        res.status(201).json(result);
     }
 ```
 ???
@@ -394,4 +394,168 @@ export class ApplicationModule implements NestModule {
 (В мидлвары можно внедрять зависимости - компоненты)
 ---
 
-# The pipes
+## Pipes
+A pipe transforms the input data to the desired output.
+Also, it could overtake the validation responsibility.
+<img src="https://docs.nestjs.com/assets/Pipe_1.png" />
+???
+Следующая фича - пайпы.
+Похожи на ангуляровские пайпы, их задача преобразовать один формат в другой.
+Также папы могут использоваться для валидации входных данных.
+(A pipe transforms the input data to the desired output.
+Also, it could overtake the validation responsibility,
+since it's possible to throw an exception when the data isn't correct.)
+---
+
+# Pipes
+```typescript
+@Post()
+public async addUser(@Res() res: Response, @Body() createUser: CreateUserDto) {
+    const result = await this.usersService.addUser(createUser);
+    res.status(201).json(result);
+}
+```
+```typescript
+class CreateUserDto {
+    name: string;
+}
+```
+???
+Например, у нас есть эндпоинт создание пользователя, метод принимает модель CreateUserDto.
+Было бы неплохо всю эту модель проверить. Т.е. метод ждет валидную модель, и мы можем эту логику делегировать пайпам.
+---
+
+# Pipes
+```typescript
+import * as Joi from 'joi';
+
+export const userSchema = Joi.object().keys({
+    name: Joi.string().alphanum().min(3).max(30).required(),
+}).required();
+```
+???
+https://youtu.be/Z9KkMRd8Blc?t=1106
+Есть такая библиотека joi, которая умеет проверять объекты на соответствие схеме.
+Здесь мы говорим что у нас должен быть объект, в котором есть поле, name, и это должна быть строка, в которой содержатся только буквы и цифры,
+длиной минимум 3 и максимум 30, это поле обязательно, и сам объект обязателен.
+---
+
+# Pipes
+```typescript
+import { PipeTransform, Pipe, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nestjs/core';
+import * as Joi from 'joi';
+
+@Pipe()
+export class JoiValidatorPipe implements PipeTransform {
+    
+    constructor(private schema: Joi.ObjectSchema) { }
+
+    public transform(value, metadata) {
+        const { error } = Joi.validate(value, this.schema);
+        if (error) {
+            throw new HttpException(error, HttpStatus.BAD_REQUEST);
+        }
+        return value;
+    }
+}
+```
+???
+Пайп, это класс с декоратором Pipe() и который реализовывает интерфейс PipeTransform.
+Это и. с одним методом transform(), который принимает value это что нам пришло, и метод должен вернуть новое значение.
+Здесь этот пайп работает как валидатор, мы проверяем значение с помощью библиотеки joi, если есть ошибки выбрасываем эксепшн,
+если нет ошибок - ничего не делаем.
+---
+
+# Pipes usage
+```typescript
+@Post()
+@UsePipes(new JoiValidatorPipe(schema))
+public async addUser( @Res() res: Response, @Body() user: CreateUserDto) {
+    const result = await this.usersService.addUser(user)
+    res.status(201).json(result);
+}
+```
+???
+Чтобы подключить этот пайп, надо использовать декоратор UsePipes, и передать туда инстансы пайпов.
+один или несколько.
+---
+
+# Pipes usage
+
+```typescript
+@UsePipes(new ValidationPipe(...))
+class UsersController {
+    // ...
+}
+```
+```typescript
+async addUser(@Body(new ValidationPipe(...)) user: CreateUserDto) {
+    this.usersService.addUser(user);
+}
+```
+???
+Можно декорировать весь класс контрОллера, тогда пайп будет применяться на всех методах.
+Также пайп можно передать в декоратор Body() как параметр.
+---
+
+# Exception Filters
+In Nest there's an exceptions layer, which responsibility is to catch the unhandled exceptions and return the appropriate response to the end-user.
+???
+---
+
+# HttpException
+
+```typescript
+import { Controller, Get, HttpException } from '@nestjs/common';
+
+@Controller()
+export class UsersController {
+
+    // ...
+    
+    @Get('users/:id')
+    async findById(@Param('id') userId: number): User {
+        const user = await this.usersService.findById(userId);
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        return user;
+    }
+}
+```
+???
+---
+
+# Exception Filter
+```typescript
+import { ExceptionFilter, Catch, HttpException } from '@nestjs/common';
+
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+    
+    catch(exception: HttpException, response) {
+        const status = exception.getStatus();
+
+        response
+          .status(status)
+          .json({
+               statusCode: status,
+               message: `It's a message from the exception filter`,
+          });
+    }
+}
+```
+???
+---
+
+# Filter usage
+```typescript
+@Controller()
+@UseFilters(new HttpExceptionFilter())
+export class UsersController {
+    // ...
+}
+```
+???
+---
