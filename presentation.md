@@ -86,7 +86,7 @@ import { UsersService } from './users.service';
 export class UsersModule { }
 ```
 ???
-Модуль - это класс с декоратором Module.  
+Модуль - это обычный класс с декоратором Module.  
 Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве exports.
 ---
 
@@ -166,7 +166,7 @@ export class UsersController {
 ```
 ???
 Добавим следующий контроллер UsersController.  
-Аргументы которые приходят в метод, express-овские объекты request, response и next.  
+Аргументы которые приходят в метод, это express-овские объекты request, response и next.  
 ---
 
 # Endpoints
@@ -175,6 +175,8 @@ GET: users
 GET: users/:id 
 POST: users
 ```
+???
+Мы получим следующие эндпоинты.
 --
 ```typescript
 import { Controller, Get, Post } from '@nestjs/common';
@@ -193,7 +195,6 @@ export class UsersController {
 }
 ```
 ???
-Мы получим следующие эндпоинты.
 Пути можно сократить на users и записать следующим образом.
 Т.е. префикс для эндпоинта мы переместили в параметр декоратора.
 ---
@@ -209,7 +210,7 @@ import { UsersController } from './users.controller';
 export class ApplicationModule { }
 ```
 ???
-Мы создали контрОллер, но модуль и приложение о нем ничего не знает.
+Мы создали контрОллер, но модуль и приложение о нем ничего не знает.  
 Его надо добавить в модуль.
 ---
 
@@ -246,7 +247,7 @@ export class UsersController {
 | `@Headers(param?: string)` | `req.headers / req.headers[param]` |
 ]
 ???
-Это список декораторов-оберток над объектами экспресса.
+Это список декораторов-оберток над объектами express.
 Если этого недостаточно...
 ---
 
@@ -266,7 +267,7 @@ async findOne(@User() user: UserEntity) {
 }
 ```
 ???
-То можно создать свой, и выдернуть из объекта request нужные данные.
+То можно создать свой, и достать из объекта request нужные данные.
 ---
 
 # Component
@@ -317,10 +318,10 @@ export class UsersController {
     }
 ```
 ???
-И следующим образом можно использовать его в контрОллере.
-Из метода можно вернуть объект или массив, и результат будет автоматически преобразован в json, и будут выставлены соответствующие заголовки.
-Это второй и рекомендуемы способ выдачи ответа клиента.
-(На слайде 15 нерекомендуемый способ)
+И следующим образом можно использовать его в контрОллере.  
+Из метода можно вернуть объект или массив, и результат будет автоматически преобразован в json, и будут выставлены соответствующие заголовки.  
+Это второй и рекомендуемый способ выдачи ответа клиента.  
+(На слайде [15](#p15) нерекомендуемый способ)
 ---
 
 # Adding to Module
@@ -335,6 +336,8 @@ import { UsersService } from './users.service';
 })
 export class ApplicationModule { }
 ```
+???
+И как и в остальных случаях, сервис надо добавить в модуль.  
 ---
 
 # Middlewares
@@ -346,9 +349,11 @@ Middleware is a function, which is called before route handler. Middleware funct
 * Call the next middleware function in the stack
 * If the current middleware function does not end the request-response cycle, it must call next() to pass control to the next middleware function. Otherwise, the request will be left hanging
 ???
+Мидлвар это функция которая вызывается перед роутингом. Эта функция имеет доступ к объектам request / response.  
+Также может выступать в качестве барьера - если не вызовется next() метод в контрОллере никогда не вызовется.
 ---
 
-# Middlewares
+# LoggerMiddleware
 ```typescript
 import { Middleware, NestMiddleware, ExpressMiddleware } from '@nestjs/common';
 
@@ -365,11 +370,12 @@ export class LoggerMiddleware implements NestMiddleware {
 }
 ```
 ???
-Мидлвар это класс с соответствующим декоратором @Middleware(), который должен имплементировать один метод resolve,
-и этот метод должен вернуть функцию.
+Мидлвар это класс с соответствующим декоратором, который должен имплементировать один метод resolve,
+и этот метод должен вернуть функцию, сигнатура которой соответствует миддлвару в express.  
+(Это можно записать в сокращенном виде, как функцию)
 ---
 
-# Middlewares
+# Where to put the middlewares?
 
 ```typescript
 import { Module, NestModule, RequestMethod } from '@nestjs/common';
@@ -390,7 +396,8 @@ export class ApplicationModule implements NestModule {
 }
 ```
 ???
-Далее мы должны в нашем модуле добавить функцию configure, которая принимает какой-то контекст. И мы говорим контексту примени этот логгер мидлвар для роута которые начинаются со /users (слэш юзерс).
+Как его применить? Мы должны в нашем модуле добавить функцию configure, которая принимает какой-то контекст. И мы говорим, примени этот логгер мидлвар для роута которые начинаются со /users (слэш юзерс).
+Можно указать, только ПОСТ. Или можно в методе forRoutes указать класс - тогда для всех методов в этом классе, будет применяться этот мидлвар.  
 (В мидлвары можно внедрять зависимости - компоненты)
 ---
 
@@ -401,7 +408,7 @@ Also, it could overtake the validation responsibility.
 ???
 Следующая фича - пайпы.
 Похожи на ангуляровские пайпы, их задача преобразовать один формат в другой.
-Также папы могут использоваться для валидации входных данных.
+Также пайпы могут использоваться для валидации входных данных.  
 (A pipe transforms the input data to the desired output.
 Also, it could overtake the validation responsibility,
 since it's possible to throw an exception when the data isn't correct.)
@@ -443,7 +450,7 @@ https://youtu.be/Z9KkMRd8Blc?t=1106
 # Pipes
 ```typescript
 import { PipeTransform, Pipe, HttpStatus } from '@nestjs/common';
-import { HttpException } from '@nestjs/core';
+import { HttpException } from '@nestjs/common';
 import * as Joi from 'joi';
 
 @Pipe()
@@ -477,8 +484,8 @@ public async addUser( @Res() res: Response, @Body() user: CreateUserDto) {
 }
 ```
 ???
-Чтобы подключить этот пайп, надо использовать декоратор UsePipes, и передать туда инстансы пайпов.
-один или несколько.
+Чтобы подключить этот пайп, надо использовать декоратор UsePipes, и передать туда инстансы пайпов.  
+Один или несколько.
 ---
 
 # Pipes usage
@@ -495,13 +502,15 @@ async addUser(@Body(new ValidationPipe(...)) user: CreateUserDto) {
 }
 ```
 ???
-Можно декорировать весь класс контрОллера, тогда пайп будет применяться на всех методах.
-Также пайп можно передать в декоратор Body() как параметр.
+Пайп декоратор можно повесить на метод, а можно декорировать весь класс контрОллера, тогда пайп будет применяться на всех методах.  
+Также можно передать пайп в декоратор Body() как параметр.
 ---
 
 # Exception Filters
 In Nest there's an exceptions layer, which responsibility is to catch the unhandled exceptions and return the appropriate response to the end-user.
 ???
+Следующий слой - фильтры (exception filters).  
+Их задача, это ловить ловить исключения, и выдавать клиенту измененный ответ
 ---
 
 # HttpException
@@ -525,6 +534,7 @@ export class UsersController {
 }
 ```
 ???
+Пример. По запросу нам надо найти какого-то юзера по ид, и такой не нашелся, мы должны выдать 404-ую ошибку.
 ---
 
 # Exception Filter
@@ -547,6 +557,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 }
 ```
 ???
+Как в этом случает будет выглядеть exception filter.  
+Класс должен реализовывать интерфейс ExceptionFilter с одним методом catch(), в методе доступен объект response.
 ---
 
 # Filter usage
@@ -558,4 +570,34 @@ export class UsersController {
 }
 ```
 ???
+Подключить фильтры можно декоратором @UseFilters.  
+Можно целиком на класс или на конкретный метод (как и в случае c пайпами).
 ---
+
+# Global filters
+```typescript
+const app = await NestFactory.create(ApplicationModule);
+app.useGlobalFilters(new LoggerExceptionFilter());
+```
+???
+Есть глобальные фильтры, которые применяются ко всему приложению.
+
+# Interceptors
+
+# Guards
+
+# Socket Gateway
+
+# Microservices
+
+# Unit Testing
+
+# E2E Testing
+
+# Execution Context
+
+# SQL (TypeORM)
+
+# GraphQL
+
+# CQRS
