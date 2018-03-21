@@ -2,7 +2,7 @@
 
 body {
 	font-family: 'Source Sans Pro', sans-serif;
-	font-size: 22px;
+	font-size: 23px;
 }
 
 img {
@@ -11,6 +11,18 @@ img {
 
 code {
 	font-family: 'Inconsolata', monospace;
+}
+
+h1 {
+    margin: 4% 0;
+}
+
+.column-count-2 {
+	column-count: 2;
+}
+
+.column-count-2 > ul {
+	margin: 0;
 }
 
 .inverse {

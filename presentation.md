@@ -3,8 +3,33 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 # Nest.js Overview
 .footnote[March 2018]
 ???
-Обзор Nest.js  
 Ф. = фреймворк;
+---
+
+# Content
+.column-count-2[
+* Philosophy
+* Features
+* Core Concepts
+* Module
+* Controller
+* Component
+* Middlewares
+* Pipes
+* Exception Filters
+* Interceptors
+* Guards
+* Socket Gateway
+* Microservices
+* Unit Testing
+* E2E Testing
+* Execution Context
+* SQL (TypeORM)
+* GraphQL
+* CQRS
+]
+???
+Сегодня будет обзор фрейморка nest, посмотрим его идею и основные концепции.
 ---
 
 # About Project Author
@@ -56,8 +81,7 @@ Nest стремится предоставить архитектуру прил
 Какие фичи ф. предоставляет:  
 Основан на express, поэтому вся экосистема express в вашем распоряжении.  
 Dependency Injection, несколько слоев (Exception Layer, Guards, Interceptors, Pipes)  
-Инструменты для тестирования  
-Вебсокеты и Микросервисы
+Инструменты для тестирования, вебсокеты и микросервисы из коробки.
 ---
 
 # Core Concepts
@@ -68,7 +92,8 @@ Dependency Injection, несколько слоев (Exception Layer, Guards, In
 Строительные блоки для приложения.
 Модули - это какая инкапсулированная часть приложения, например, пользователи.  
 КонтрОллеры ответственны за обработку запросов от клиенты, и возврата ответов.  
-Компоненты - это все остальное, т.е. сервисы, репозитории, фабрики, хелперы и т.п. Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты.
+Компоненты - это все остальное, т.е. сервисы, репозитории для работы с базой данных, репозитории, фабрики, хелперы и т.п.
+Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты.  
 ---
 
 # Module
@@ -124,7 +149,7 @@ export class UsersService {
 }
 ```
 ???
-Компоненты - это все остальное, т.е. сервисы, репозитории, фабрики, хелперы и т.п.  
+Компоненты - это классы с декоратором @Component (сервисы, репозитории, фабрики, хелперы и т.п.)
 Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты.  
 ---
 
@@ -143,8 +168,9 @@ const app = NestFactory.create(ApplicationModule);
 app.listen(3000, () => console.log('Application is listening on port 3000'));
 ```
 ???
-Итак, чтобы запустить nest.js приложение создать как минимум один модуль, я его назвал `ApplicationModule`, и он пустой.  
+Итак, чтобы запустить nest.js приложение, нужно создать как минимум один модуль, я его назвал `ApplicationModule`, и он пустой.  
 И передать его в `NestFactory.create()`
+Приложении запустится, но оно пустое, но оно не будет делать ничего полезного, т.е. там нет контрОллеров.
 ---
 
 # First Controller
@@ -375,7 +401,7 @@ export class LoggerMiddleware implements NestMiddleware {
 (Это можно записать в сокращенном виде, как функцию)
 ---
 
-# Where to put the middlewares?
+# Where to put middlewares?
 
 ```typescript
 import { Module, NestModule, RequestMethod } from '@nestjs/common';
