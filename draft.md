@@ -1,3 +1,22 @@
+
+# Global Filters
+```typescript
+const app = await NestFactory.create(ApplicationModule);
+app.useGlobalFilters(new LoggerExceptionFilter());
+```
+???
+Еще есть глобальные фильтры, которые применяются ко всему приложению.
+---
+
+# Global Interceptors
+```typescript
+const app = await NestFactory.create(ApplicationModule);
+app.useGlobalInterceptors(new EventsInterceptor());
+```
+???
+И интерсепторы тоже можно использовать глобально на всем приложении.
+---
+
 # Controller
 ```typescript
 import { Controller, Get } from '@nestjs/common';

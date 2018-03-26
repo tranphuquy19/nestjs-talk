@@ -91,9 +91,8 @@ Dependency Injection, несколько слоев (Exception Layer, Guards, In
 ???
 Строительные блоки для приложения.
 Модули - это какая инкапсулированная часть приложения, например, пользователи.  
-КонтрОллеры ответственны за обработку запросов от клиенты, и возврата ответов.  
+КонтрОллеры ответственны за обработку запросов, и ответов клиенту.  
 Компоненты - это все остальное, т.е. сервисы, репозитории для работы с базой данных, репозитории, фабрики, хелперы и т.п.
-Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты.  
 ---
 
 # Module
@@ -600,15 +599,42 @@ export class UsersController {
 Можно целиком на класс или на конкретный метод (как и в случае c пайпами).
 ---
 
-# Global filters
+# Interceptors
+![](https://docs.nestjs.com/assets/Interceptors_1.png)
+* bind extra logic before / after method execution
+* transform the result returned from the function
+* transform the exception thrown from the function
+* completely override the function depending on the chosen conditions (e.g. caching purposes)
+???
+Следующая абстракция - это интерсепторы. Их задача привязать дополнительную логики до или после вызова метода.
+Преобразовать исключение или результат возвращаемый из  метода.  
+Полность переписать результат выполнения метода.
+---
+
+# Interceptor Example
 ```typescript
-const app = await NestFactory.create(ApplicationModule);
-app.useGlobalFilters(new LoggerExceptionFilter());
+import { Interceptor, NestInterceptor, ExecutionContext } from '@nestjs/common';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/do';
+
+@Interceptor()
+export class LoggingInterceptor implements NestInterceptor {
+  intercept(dataOrRequest, context: ExecutionContext, stream$: Observable<any>): Observable<any> {
+    console.log('Before...');
+    const now = Date.now();
+
+    return stream$.do(
+      () => console.log(`After... ${Date.now() - now}ms`),
+    );
+  }
+}
 ```
 ???
-Есть глобальные фильтры, которые применяются ко всему приложению.
-
-# Interceptors
+Пример и. Это класс с декоратором @Interceptor() который реализует интерфейс NestInterceptor.  
+1-ый аргумент, в случае веб-приложения, http request (express), если это микросервис или веб-сокет это данные.  
+context - это объект с двумя свойствами: parent (ссылка контроллер) и handler (ссылка метод).  
+И последний stream$ - это observable.
+---
 
 # Guards
 
@@ -627,3 +653,8 @@ app.useGlobalFilters(new LoggerExceptionFilter());
 # GraphQL
 
 # CQRS
+
+# Dynamic modules
+
+# Global Usage
+# Service Locator
