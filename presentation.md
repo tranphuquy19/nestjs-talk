@@ -92,7 +92,7 @@ Dependency Injection, несколько слоев (Exception Layer, Guards, In
 Строительные блоки для приложения.
 Модули - это какая инкапсулированная часть приложения, например, пользователи.  
 КонтрОллеры ответственны за обработку запросов, и ответов клиенту.  
-Компоненты - это все остальное, т.е. сервисы, репозитории для работы с базой данных, репозитории, фабрики, хелперы и т.п.
+Компоненты - это все остальное, т.е. любые сервисы.
 ---
 
 # Module
@@ -111,7 +111,7 @@ export class UsersModule { }
 ```
 ???
 Модуль - это обычный класс с декоратором Module.  
-Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве exports.
+Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве `exports`.
 ---
 
 # Controller
@@ -169,7 +169,7 @@ app.listen(3000, () => console.log('Application is listening on port 3000'));
 ???
 Итак, чтобы запустить nest.js приложение, нужно создать как минимум один модуль, я его назвал `ApplicationModule`, и он пустой.  
 И передать его в `NestFactory.create()`
-Приложении запустится, но оно пустое, но оно не будет делать ничего полезного, т.е. там нет контрОллеров.
+Приложение запустится, но оно пустое, оно не будет делать ничего полезного, т.е. там нет контрОллеров.
 ---
 
 # First Controller
@@ -241,7 +241,7 @@ export class ApplicationModule { }
 
 # Response Object
 ```typescript
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
@@ -599,8 +599,10 @@ export class UsersController {
 Можно целиком на класс или на конкретный метод (как и в случае c пайпами).
 ---
 
-# Interceptors
+#### Interceptors
+.image90[
 ![](https://docs.nestjs.com/assets/Interceptors_1.png)
+]
 * bind extra logic before / after method execution
 * transform the result returned from the function
 * transform the exception thrown from the function
@@ -637,24 +639,55 @@ context - это объект с двумя свойствами: parent (ссы
 ---
 
 # Guards
+![](https://docs.nestjs.com/assets/Guards_1.png)
+* Guards have a single responsibility
+* They determine whether request should be handled by route handler or not
+???
+Гварды имеюют единственную ответственность, может ли метод контроллера обработать текущий http request.
+---
 
+# RolesGuard
+```typescript
+import { Guard, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Observable } from 'rxjs/Observable';
+
+@Guard()
+export class RolesGuard implements CanActivate {
+  canActivate(dataOrRequest, context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    // Validate user logic...
+    return true;
+  }
+}
+```
+???
+Guard это класс с соответствующим декоратором и реализует CanActivate интерфейс с одним методом `canActivate`.
+Этот метод выполняется после каждого мидлвара, но до пайпов.
+Если возвращается false, то клиенту вернется вернется 403 ошибка.
+---
+
+# Guards Usage
+```typescript
+@Controller('users')
+@UseGuards(RolesGuard)
+export class UsersController { }
+```
+```typescript
+const app = await NestFactory.create(ApplicationModule);
+app.useGlobalGuards(new RolesGuard());
+```
+???
+Использование гвардов возможно на уровне отдельных методов контроллера, на всем классе контроллера или глобально.
+---
+
+# Just another framework?
 # Socket Gateway
-
 # Microservices
-
 # Unit Testing
-
 # E2E Testing
-
 # Execution Context
-
 # SQL (TypeORM)
-
 # GraphQL
-
 # CQRS
-
 # Dynamic modules
-
 # Global Usage
 # Service Locator

@@ -9,6 +9,14 @@ img {
 	max-width: 100%;
 }
 
+.image80 img {
+	max-width: 80%;
+}
+
+.image90 img {
+	max-width: 90%;
+}
+
 code {
 	font-family: 'Inconsolata', monospace;
 }
