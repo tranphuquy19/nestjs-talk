@@ -5,7 +5,6 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 ???
 Ф. = фреймворк;
 ---
-
 # Content
 .column-count-2[
 * Philosophy
@@ -19,19 +18,10 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 * Exception Filters
 * Interceptors
 * Guards
-* Socket Gateway
-* Microservices
-* Unit Testing
-* E2E Testing
-* Execution Context
-* SQL (TypeORM)
-* GraphQL
-* CQRS
 ]
 ???
 Сегодня будет обзор фрейморка nest, посмотрим его идею и основные концепции.
 ---
-
 # About Project Author
 .float[
 ![](https://avatars0.githubusercontent.com/u/23244943?s=300&v=4)
@@ -45,7 +35,6 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 ???
 Несколько слов аб авторе фреймворка. Зовут его Камиль Мышлевиц. Он из Польши.  
 ---
-
 # Introduction
 Nest is a powerful web framework for Node.js,
 which helps you effortlessly build efficient, scalable applications.
@@ -54,7 +43,6 @@ It uses modern JavaScript, is built with TypeScript and combines best concepts o
 Nest.js это современный backend ф., написан на TypeScript и активно использует декораторы.  
 Писать приложения можно TypeScript, можно на JavaScript, но рекомендуется TypeScript (потому что сам ф. на нем написан).  
 ---
-
 # Philosophy
 The core concept of Nest is to provide an **architecture**.  
 Which helps developers to accomplish maximum separation of layers and increase abstraction in their applications.
@@ -63,7 +51,6 @@ Which helps developers to accomplish maximum separation of layers and increase a
 Nest стремится предоставить архитектуру приложения из коробки, что позволяет разработчику делать максимальное разделение слоев
 и увеличивать абстракицию в приложениях, и разрабатывать слабо связанные компоненты.
 ---
-
 # Features
 * Based on express.js and socket.io
 * Dependency Injection
@@ -83,7 +70,6 @@ Nest стремится предоставить архитектуру прил
 Dependency Injection, несколько слоев (Exception Layer, Guards, Interceptors, Pipes)  
 Инструменты для тестирования, вебсокеты и микросервисы из коробки.
 ---
-
 # Core Concepts
 * **Modules** - logical part of the application which lives within the same domain boundary
 * **Controlers** - is responsible for handling incoming requests, and return a response to the client
@@ -94,7 +80,6 @@ Dependency Injection, несколько слоев (Exception Layer, Guards, In
 КонтрОллеры ответственны за обработку запросов, и ответов клиенту.  
 Компоненты - это все остальное, т.е. любые сервисы.
 ---
-
 # Module
 By default, modules **encapsulate** each dependency. It means, that it is not possible to use its components / controllers outside module.
 ```typescript
@@ -113,7 +98,6 @@ export class UsersModule { }
 Модуль - это обычный класс с декоратором Module.  
 Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве `exports`.
 ---
-
 # Controller
 The controllers layer is responsible for handling incoming HTTP requests.
 ```typescript
@@ -133,7 +117,6 @@ export class UsersController {
 КонтрОлеры принимают http request и их обрабатывают.  
 На методы можно добавить декораторы get, post, delete и т.п.
 ---
-
 # Component
 
 ```typescript
@@ -151,7 +134,6 @@ export class UsersService {
 Компоненты - это классы с декоратором @Component (сервисы, репозитории, фабрики, хелперы и т.п.)
 Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты.  
 ---
-
 # Setup Application
 ```typescript
 import { Module } from '@nestjs/common';
@@ -171,7 +153,6 @@ app.listen(3000, () => console.log('Application is listening on port 3000'));
 И передать его в `NestFactory.create()`
 Приложение запустится, но оно пустое, оно не будет делать ничего полезного, т.е. там нет контрОллеров.
 ---
-
 # First Controller
 ```typescript
 import { Controller, Get, Post } from '@nestjs/common';
@@ -193,7 +174,6 @@ export class UsersController {
 Добавим следующий контроллер UsersController.  
 Аргументы которые приходят в метод, это express-овские объекты request, response и next.  
 ---
-
 # Endpoints
 ```
 GET: users
@@ -223,7 +203,6 @@ export class UsersController {
 Пути можно сократить на users и записать следующим образом.
 Т.е. префикс для эндпоинта мы переместили в параметр декоратора.
 ---
-
 # Adding to Module
 ```typescript
 import { Module } from '@nestjs/common';
@@ -238,7 +217,6 @@ export class ApplicationModule { }
 Мы создали контрОллер, но модуль и приложение о нем ничего не знает.  
 Его надо добавить в модуль.
 ---
-
 # Response Object
 ```typescript
 import { Controller, Get, Res } from '@nestjs/common';
@@ -256,7 +234,6 @@ export class UsersController {
 В большинстве случаев нам не нужны все 3 объекта от express: request, response, next в аргументах.
 Иногда достаточно только response. И в nest.js есть набор декораторов для аргументов, которые позволяют получить нужный объект из express.
 ---
-
 # Request Object
 
 .fullwidth[
@@ -275,7 +252,6 @@ export class UsersController {
 Это список декораторов-оберток над объектами express.
 Если этого недостаточно...
 ---
-
 # Custom Decorators
 ```typescript
 import { createRouteParamDecorator } from '@nestjs/common';
@@ -294,7 +270,6 @@ async findOne(@User() user: UserEntity) {
 ???
 То можно создать свой, и достать из объекта request нужные данные.
 ---
-
 # Component
 ```typescript
 import { Component } from '@nestjs/common';
@@ -322,7 +297,6 @@ export class UsersService {
 Компоненты - это все остальное, т.е. сервисы, репозитории, фабрики, хелперы и т.п. Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты.  
 Вот мы сделали сервис пользователей, который умеет получать пользователей, здесь данные жетско закодированы, но на практике, здесь был бы какой-нибудь UserRepository компонент, который ходил бы хранилище (в базу данных) и получал данные.
 ---
-
 # Let's use it
 ```typescript
 @Controller('users')
@@ -348,7 +322,6 @@ export class UsersController {
 Это второй и рекомендуемый способ выдачи ответа клиента.  
 (На слайде [15](#p15) нерекомендуемый способ)
 ---
-
 # Adding to Module
 ```typescript
 import { Module } from '@nestjs/common';
@@ -364,7 +337,6 @@ export class ApplicationModule { }
 ???
 И как и в остальных случаях, сервис надо добавить в модуль.  
 ---
-
 # Middlewares
 ![](https://docs.nestjs.com/assets/Middlewares_1.png)
 Middleware is a function, which is called before route handler. Middleware functions can perform the following tasks:
@@ -377,7 +349,6 @@ Middleware is a function, which is called before route handler. Middleware funct
 Мидлвар это функция которая вызывается перед роутингом. Эта функция имеет доступ к объектам request / response.  
 Также может выступать в качестве барьера - если не вызовется next() метод в контрОллере никогда не вызовется.
 ---
-
 # LoggerMiddleware
 ```typescript
 import { Middleware, NestMiddleware, ExpressMiddleware } from '@nestjs/common';
@@ -395,11 +366,10 @@ export class LoggerMiddleware implements NestMiddleware {
 }
 ```
 ???
-Мидлвар это класс с соответствующим декоратором, который должен имплементировать один метод resolve,
+Мидлвар это класс с соответствующим декоратором, который должен имплементировать интерфейс NestMiddleware с одним методом resolve,
 и этот метод должен вернуть функцию, сигнатура которой соответствует миддлвару в express.  
 (Это можно записать в сокращенном виде, как функцию)
 ---
-
 # Where to put middlewares?
 
 ```typescript
@@ -425,7 +395,6 @@ export class ApplicationModule implements NestModule {
 Можно указать, только ПОСТ. Или можно в методе forRoutes указать класс - тогда для всех методов в этом классе, будет применяться этот мидлвар.  
 (В мидлвары можно внедрять зависимости - компоненты)
 ---
-
 ## Pipes
 A pipe transforms the input data to the desired output.
 Also, it could overtake the validation responsibility.
@@ -438,7 +407,6 @@ Also, it could overtake the validation responsibility.
 Also, it could overtake the validation responsibility,
 since it's possible to throw an exception when the data isn't correct.)
 ---
-
 # Pipes
 ```typescript
 @Post()
@@ -456,7 +424,6 @@ class CreateUserDto {
 Например, у нас есть эндпоинт создание пользователя, метод принимает модель CreateUserDto.
 Было бы неплохо всю эту модель проверить. Т.е. метод ждет валидную модель, и мы можем эту логику делегировать пайпам.
 ---
-
 # Pipes
 ```typescript
 import * as Joi from 'joi';
@@ -471,7 +438,6 @@ https://youtu.be/Z9KkMRd8Blc?t=1106
 Здесь мы говорим что у нас должен быть объект, в котором есть поле, name, и это должна быть строка, в которой содержатся только буквы и цифры,
 длиной минимум 3 и максимум 30, это поле обязательно, и сам объект обязателен.
 ---
-
 # Pipes
 ```typescript
 import { PipeTransform, Pipe, HttpStatus } from '@nestjs/common';
@@ -498,7 +464,6 @@ export class JoiValidatorPipe implements PipeTransform {
 Здесь этот пайп работает как валидатор, мы проверяем значение с помощью библиотеки joi, если есть ошибки выбрасываем эксепшн,
 если нет ошибок - ничего не делаем.
 ---
-
 # Pipes usage
 ```typescript
 @Post()
@@ -512,7 +477,6 @@ public async addUser( @Res() res: Response, @Body() user: CreateUserDto) {
 Чтобы подключить этот пайп, надо использовать декоратор UsePipes, и передать туда инстансы пайпов.  
 Один или несколько.
 ---
-
 # Pipes usage
 
 ```typescript
@@ -530,14 +494,12 @@ async addUser(@Body(new ValidationPipe(...)) user: CreateUserDto) {
 Пайп декоратор можно повесить на метод, а можно декорировать весь класс контрОллера, тогда пайп будет применяться на всех методах.  
 Также можно передать пайп в декоратор Body() как параметр.
 ---
-
 # Exception Filters
 In Nest there's an exceptions layer, which responsibility is to catch the unhandled exceptions and return the appropriate response to the end-user.
 ???
 Следующий слой - фильтры (exception filters).  
 Их задача, это ловить ловить исключения, и выдавать клиенту измененный ответ
 ---
-
 # HttpException
 
 ```typescript
@@ -561,7 +523,6 @@ export class UsersController {
 ???
 Пример. По запросу нам надо найти какого-то юзера по ид, и такой не нашелся, мы должны выдать 404-ую ошибку.
 ---
-
 # Exception Filter
 ```typescript
 import { ExceptionFilter, Catch, HttpException } from '@nestjs/common';
@@ -585,7 +546,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
 Как в этом случает будет выглядеть exception filter.  
 Класс должен реализовывать интерфейс ExceptionFilter с одним методом catch(), в методе доступен объект response.
 ---
-
 # Filter usage
 ```typescript
 @Controller()
@@ -598,7 +558,6 @@ export class UsersController {
 Подключить фильтры можно декоратором @UseFilters.  
 Можно целиком на класс или на конкретный метод (как и в случае c пайпами).
 ---
-
 #### Interceptors
 .image90[
 ![](https://docs.nestjs.com/assets/Interceptors_1.png)
@@ -608,11 +567,10 @@ export class UsersController {
 * transform the exception thrown from the function
 * completely override the function depending on the chosen conditions (e.g. caching purposes)
 ???
-Следующая абстракция - это интерсепторы. Их задача привязать дополнительную логики до или после вызова метода.
+Следующая абстракция - это интерсепторы. Их задача привязать дополнительную логику до или после вызова метода.
 Преобразовать исключение или результат возвращаемый из  метода.  
 Полность переписать результат выполнения метода.
 ---
-
 # Interceptor Example
 ```typescript
 import { Interceptor, NestInterceptor, ExecutionContext } from '@nestjs/common';
@@ -632,12 +590,11 @@ export class LoggingInterceptor implements NestInterceptor {
 }
 ```
 ???
-Пример и. Это класс с декоратором @Interceptor() который реализует интерфейс NestInterceptor.  
-1-ый аргумент, в случае веб-приложения, http request (express), если это микросервис или веб-сокет это данные.  
+Пример интерсептора. Это класс с декоратором @Interceptor() который реализует интерфейс NestInterceptor.  
+1-ый аргумент, в случае веб-приложения, http request (express), если это микросервис или веб-сокет, то это какие-то данные.  
 context - это объект с двумя свойствами: parent (ссылка контроллер) и handler (ссылка метод).  
 И последний stream$ - это observable.
 ---
-
 # Guards
 ![](https://docs.nestjs.com/assets/Guards_1.png)
 * Guards have a single responsibility
@@ -645,7 +602,6 @@ context - это объект с двумя свойствами: parent (ссы
 ???
 Гварды имеюют единственную ответственность, может ли метод контроллера обработать текущий http request.
 ---
-
 # RolesGuard
 ```typescript
 import { Guard, CanActivate, ExecutionContext } from '@nestjs/common';
@@ -664,7 +620,6 @@ Guard это класс с соответствующим декоратором
 Этот метод выполняется после каждого мидлвара, но до пайпов.
 Если возвращается false, то клиенту вернется вернется 403 ошибка.
 ---
-
 # Guards Usage
 ```typescript
 @Controller('users')
@@ -678,16 +633,29 @@ app.useGlobalGuards(new RolesGuard());
 ???
 Использование гвардов возможно на уровне отдельных методов контроллера, на всем классе контроллера или глобально.
 ---
-
 # Just another framework?
-# Socket Gateway
-# Microservices
-# Unit Testing
-# E2E Testing
-# Execution Context
-# SQL (TypeORM)
-# GraphQL
-# CQRS
-# Dynamic modules
-# Global Usage
-# Service Locator
+
+???
+Еще один фреймворк. Да,
+---
+
+* Socket Gateway
+* Microservices
+* Unit Testing
+* E2E Testing
+* Execution Context
+* SQL (TypeORM)
+* GraphQL
+* CQRS
+* Socket Gateway
+* Microservices
+* Unit Testing
+* E2E Testing
+* Execution Context
+* SQL (TypeORM)
+* GraphQL
+* CQRS
+* Dynamic modules
+* Global Usage
+* Service Locator
+
