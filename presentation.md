@@ -637,9 +637,79 @@ app.useGlobalGuards(new RolesGuard());
 Использование гвардов возможно на уровне отдельных методов контроллера, на всем классе контроллера или глобально.
 ---
 # Just another framework?
-
 ???
-Еще один фреймворк. Да,
+Еще один фреймворк. Да, но из коробки есть микросервисы, вебсокеты, тестирование.
+---
+# Socket Gateway
+```typescript
+import { WebSocketGateway, SubscribeMessage, WsResponse, WebSocketServer, WsException } from '@nestjs/websockets';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/from';
+import 'rxjs/add/operator/map';
+
+@WebSocketGateway({ port: 81 })
+export class EventsGateway {
+  
+  @WebSocketServer() server;
+
+  @SubscribeMessage('events')
+  onEvent(sender, data): Observable<WsResponse<number>> {
+    const event = 'events';
+    const response = [1, 2, 3];
+
+    return Observable.from(response).map(res => ({ event, data: res }));
+  }
+} 
+```
+???
+Сделать вебсокеты очень просто, у нас есть декоратор `WebSocketGateway`, `WebSocketServer` и `SubscribeMessage` подписка на события.
+Здесь мы подписываемся на событие `events`.
+---
+# Microservices
+```typescript
+import { Controller, Get, UseInterceptors } from '@nestjs/common';
+import { ClientProxy, Client, Transport, MessagePattern } from '@nestjs/microservices';
+import { Observable } from 'rxjs/Observable';
+
+@Controller()
+export class MathController {
+  
+  @Client({ transport: Transport.TCP, port: 43210 })
+  client: ClientProxy;
+
+  @Get()
+  call(): Observable<number> {
+    const pattern = { cmd: 'sum' };
+    const data = [1, 2, 3, 4, 5];
+    return this.client.send<number>(pattern, data);
+  }
+
+  // In microservice
+  @MessagePattern({ cmd: 'sum' })
+  sum(data: number[]): number {
+    return (data || []).reduce((a, b) => a + b);
+  }
+}
+```
+???
+Как выглядит микросервисы. Есть какой-то сервис который общается по TCP по порту 43210.
+Мы берем контрОллер, настраиваем декоратор `@Client`.
+Отправляем сервису команду `sum` с данными, в сервисе будет вызван метод, который декорирован `@MessagePattern` с нашей командой `sum`.
+---
+# Unit Testing
+```typescript
+const module = await Test.createTestingModule({
+    controllers: [UserController],
+    components: [
+        { provide: UserService, useValue: mockUserService },
+    ],
+}).compile();
+
+const userController = module.get<UserController>(UserController);
+```
+???
+Тестирование, мы можем взять наш модуль и подменить в нем конкретную реализацию своей.  
+И протестировать класс.
 ---
 
 * Socket Gateway
@@ -650,7 +720,6 @@ app.useGlobalGuards(new RolesGuard());
 * SQL (TypeORM)
 * GraphQL
 * CQRS
-* Socket Gateway
 * Microservices
 * Unit Testing
 * E2E Testing
@@ -661,4 +730,3 @@ app.useGlobalGuards(new RolesGuard());
 * Dynamic modules
 * Global Usage
 * Service Locator
-
