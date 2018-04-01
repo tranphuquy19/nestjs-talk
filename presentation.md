@@ -279,9 +279,9 @@ import { Component } from '@nestjs/common';
 export class UsersService {
     
     private users = [
-        { id: 1, name: "John Doe" },
-        { id: 2, name: "Alice Caeiro" },
-        { id: 3, name: "Who Knows" },
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Alice Caeiro' },
+        { id: 3, name: 'Who Knows' },
     ];
 
     getAllUsers() {
@@ -611,17 +611,18 @@ import { Observable } from 'rxjs/Observable';
 
 @Guard()
 export class RolesGuard implements CanActivate {
-  canActivate(dataOrRequest, context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(dataOrRequest, context: ExecutionContext)
+          : boolean | Promise<boolean> | Observable<boolean> {
     // Validate user logic...
     return true;
   }
 }
 ```
 ???
-Guard это класс с соответствующим декоратором и реализует CanActivate интерфейс с одним методом `canActivate`.
-Этот метод выполняется после каждого мидлвара, но до пайпов.
-Если возвращается false, то клиенту вернется вернется 403 ошибка.
-Аргументы в методе, такие же как в интерсепторе - HttpRequest или данные, и обект со ссылками на метод и контрОллер.
+Guard это класс с соответствующим декоратором и реализует CanActivate интерфейс с одним методом `canActivate`.  
+Этот метод выполняется после мидлваров, но до пайпов.
+Если возвращается false (синхронно или асинхронно), то клиенту вернется вернется 403 ошибка.  
+Аргументы в методе, такие же как в интерсепторе - HttpRequest или данные, и объект со ссылками на метод и контрОллер.
 ---
 # Guards Usage
 ```typescript
@@ -647,7 +648,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/map';
 
-@WebSocketGateway({ port: 81 })
+@WebSocketGateway()
 export class EventsGateway {
   
   @WebSocketServer() server;
@@ -662,8 +663,10 @@ export class EventsGateway {
 } 
 ```
 ???
-Сделать вебсокеты очень просто, у нас есть декоратор `WebSocketGateway`, `WebSocketServer` и `SubscribeMessage` подписка на события.
-Здесь мы подписываемся на событие `events`.
+С вебсокетами работать очень просто, у нас есть декоратор `WebSocketGateway`, `WebSocketServer`.
+И `SubscribeMessage` - подписка на событие. Здесь мы подписываемся на событие `events`.
+Под капотом, `@WebSocketServer` это socket.io server.
+Можно написать свой адаптер, и работать с нативными веб-сокетами или с чем-то другим.
 ---
 # Microservices
 ```typescript
@@ -692,7 +695,7 @@ export class MathController {
 }
 ```
 ???
-Как выглядит микросервисы. Есть какой-то сервис который общается по TCP по порту 43210.
+Как выглядит микросервисы. К примеру, есть какой-то сервис который общается по TCP, порт 43210.
 Мы берем контрОллер, настраиваем декоратор `@Client`.
 Отправляем сервису команду `sum` с данными, в сервисе будет вызван метод, который декорирован `@MessagePattern` с нашей командой `sum`.
 ---
