@@ -701,6 +701,10 @@ export class MathController {
 ---
 # Unit Testing
 ```typescript
+import { Test } from '@nestjs/testing';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
+
 const module = await Test.createTestingModule({
     controllers: [UserController],
     components: [
@@ -711,25 +715,24 @@ const module = await Test.createTestingModule({
 const userController = module.get<UserController>(UserController);
 ```
 ???
-Тестирование, мы можем взять наш модуль и подменить в нем конкретную реализацию своей.  
-И протестировать класс.
+В nestjs есть специальные инструменты для тестирования.  
+Можно взять наш модуль и подменить в нем конкретные реализации компонентов своими.  
+С помощью метода `get` можно получить любой инстанс и протестировать его.
 ---
 
-* Socket Gateway
+# End of Overview
+
+---
+# Advanced Nest
+.column-count-2[
+* Websockets
 * Microservices
-* Unit Testing
-* E2E Testing
-* Execution Context
-* SQL (TypeORM)
-* GraphQL
-* CQRS
-* Microservices
-* Unit Testing
-* E2E Testing
-* Execution Context
-* SQL (TypeORM)
-* GraphQL
-* CQRS
 * Dynamic modules
+* Execution Context
 * Global Usage
 * Service Locator
+* SQL (TypeORM)
+* GraphQL
+* OpenAPI (Swagger)
+* CQRS
+]
