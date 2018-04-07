@@ -18,6 +18,9 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 * Exception Filters
 * Interceptors
 * Guards
+* Websockets
+* Microservices
+* Unit Testing
 ]
 ???
 Сегодня будет обзор фрейморка nest, посмотрим его идею и основные концепции.
@@ -727,6 +730,7 @@ const userController = module.get<UserController>(UserController);
 .column-count-2[
 * Websockets
 * Microservices
+* Nest CLI
 * Dynamic modules
 * Execution Context
 * Global Usage
@@ -736,3 +740,127 @@ const userController = module.get<UserController>(UserController);
 * OpenAPI (Swagger)
 * CQRS
 ]
+---
+# Gateways
+```ts
+@WebSocketGateway()
+export class EventsGateway {
+  @WebSocketServer() server;
+
+  @SubscribeMessage('events')
+  onEvent(client, data): Observable<WsResponse<number>> {
+    const event = 'events';
+    const response = [1, 2, 3];
+
+    return Observable.from(response).map(res => ({ event, data: res }));
+  }
+}
+```
+???
+Вебсокеты или Гейтвэй. Гейтвэй - это класс с декоратором `@WebSocketGateway()`, по факту это инкапсулированный socket.io сервер.  
+---
+# Exception Filters
+
+```ts
+throw new WsException('Invalid credentials.');
+```
+```ts
+import { Catch, WsExceptionFilter } from '@nestjs/common';
+import { WsException } from '@nestjs/websockets';
+
+@Catch(WsException)
+export class ExceptionFilter implements WsExceptionFilter {
+  catch(exception: WsException, client) {
+    client.emit('exception', {
+      status: 'error',
+      message: `It's a message from the exception filter`,
+    });
+  }
+}
+```
+???
+У вебсокетов есть эксепш фильтры, они ничем не отличаются от основных фильтров, кроме одного вместо HttpException-ов надо выбрасывать `WsException`.
+---
+## Pipes / Guards / Interceptors
+Instead of throwing `HttpException`, you should use the `WsException`.
+
+* Guards: `canActivate(data, context)`
+* Interceptors: `intercept(data, context, stream$)`
+
+The websockets guards takes the `data` passed from the client instead of expressjs `request` object as an argument.
+???
+Пайпы, Гварды, и интерцепторы - работают так же как и в веб-приложении, только опять надо выбрасывать `WsException` вместо `HttpException`.  
+И еще одно отличие в гвардах и интерцепторах первый аргумент будет не `http-request`, а какие-то данные от клиента при `socket.emit`.
+---
+# WebSocket Adapter
+```ts
+export class WsAdapter implements WebSocketAdapter {
+  
+  create(port: number) {
+    return new WebSocket.Server({ port });
+  }
+
+  bindClientConnect(server, callback: (...args: any[]) => void) {
+    server.on('connection', callback);
+  }
+
+  bindMessageHandlers(client: WebSocket, handlers: MessageMappingProperties[], process: (data) => Observable<any>) {
+    Observable.fromEvent(client, 'message')
+      .switchMap((buffer) => this.bindMessageHandler(buffer, handlers, process))
+      .filter((result) => !!result)
+      .subscribe((response) => client.send(JSON.stringify(response)));
+  }
+
+  private bindMessageHandler(buffer, handlers: MessageMappingProperties[], process: (data) => Observable<any>): Observable<any> {
+    const data = JSON.parse(buffer.data);
+    const messageHandler = handlers.find((handler) => handler.message === data.type);
+    if (!messageHandler) {
+      return Observable.empty();
+    }
+    const { callback } = messageHandler;
+    return process(callback(data));
+  }
+}
+```
+???
+Если вы не хотите использовать socket.io, а хотите, к примеру, нативные веб-сокеты.
+Все что надо - это написать свой класс который реализовывает интерфейс `WebSocketAdapter`.
+---
+# Microservices
+![](https://docs.nestjs.com/assets/Microservices_1.png)
+???
+По факту, это не совсем микросервис, это небольшое приложение, которое использует различные транспортные уровни (не http).
+Nest поддерживает 2 типа транспорта: TCP и Redis pub/sub, но ничто не мешает написать реализацию для другого протокола.
+Т.е. надо создать класс, которые реализовывает интерфейс `CustomTransportStrategy`.
+---
+# Microservices Basics
+```ts
+import { NestFactory } from '@nestjs/core';
+import { ApplicationModule } from './modules/app.module';
+import { Transport } from '@nestjs/microservices';
+
+async function bootstrap() {
+  const app = await NestFactory.createMicroservice(ApplicationModule, {
+    transport: Transport.TCP,
+  });
+  app.listen(() => console.log('Microservice is listening'));
+}
+bootstrap();
+```
+???
+Чтобы создать микросервис надо вызвать `NestFactory.createMicroservice` 1-ый параметр модуль, 2-ой настройки микросервиса (транспорт, порт и т.д.)
+---
+# Microservices Patterns
+```ts
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
+
+@Controller()
+export class MathController {
+  @MessagePattern({ cmd: 'sum' })
+  sum(data: number[]): number {
+    return (data || []).reduce((a, b) => a + b);
+  }
+}
+```
+???

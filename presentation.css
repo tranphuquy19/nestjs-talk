@@ -43,6 +43,12 @@ h1 {
 	font-family: 'Inconsolata', monospace;
 }
 
+.remark-inline-code {
+	background: #eee;
+    padding: 0 4px;
+    border-radius: 4px;
+}
+
 .footnote {
 	position: absolute;
 	bottom: 3em;
