@@ -148,11 +148,12 @@ export class ApplicationModule { }
 import { NestFactory } from '@nestjs/core';
 import { ApplicationModule } from './app.module';
 
-const app = NestFactory.create(ApplicationModule);
+const app = await NestFactory.create(ApplicationModule);
 app.listen(3000, () => console.log('Application is listening on port 3000'));
 ```
 ???
 Итак, чтобы запустить nest.js приложение, нужно создать как минимум один модуль передать его в `NestFactory.create()`
+Вторым параметром, иожно передать инстанс экспресса.
 Приложение запустится, но оно пустое, оно не будет делать ничего полезного, т.к. нет контрОллеров.
 ---
 # First Controller
@@ -323,8 +324,26 @@ export class UsersController {
 ???
 И теперь мы может заинжектить его в контрОллер.  
 Из метода можно вернуть объект или массив, и результат будет автоматически преобразован в json, и будут выставлены соответствующие заголовки.  
-Это второй и рекомендуемый способ выдачи ответа клиента.  
-(На слайде [15](#p15) нерекомендуемый способ)
+Это второй и рекомендуемый способ выдачи ответа клиента. (На слайде [15](#p15) нерекомендуемый способ)   
+Приложение все еще не будет работать, как надо...
+---
+# `req.body.user`
+We are trying to extract request body (`req.body.user`) without `body-parser`
+
+```ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import * as bodyParser from 'body-parser';
+
+const express = express();
+express.use(bodyParser.json({ strict: false }));
+
+const app = await NestFactory.create(AppModule, express);
+await app.listen();
+```
+???
+... потому что мы обращаемся к `request.body.user`, но `body-parser` не подключен.  
+`NestFactory.create` принимает вторым параметром инстанс express-a, в который предварительно можно подключить модуль body-parser.
 ---
 # Adding to Module
 ```typescript
@@ -779,7 +798,7 @@ export class ExceptionFilter implements WsExceptionFilter {
 }
 ```
 ???
-У вебсокетов есть эксепш фильтры, они ничем не отличаются от основных фильтров, кроме одного вместо HttpException-ов надо выбрасывать `WsException`.
+У вебсокетов есть эксепшн фильтры, они ничем не отличаются от обычный эксепшн фильтров, кроме одного - вместо HttpException-ов надо выбрасывать `WsException`.
 ---
 ## Pipes / Guards / Interceptors
 Instead of throwing `HttpException`, you should use the `WsException`.
@@ -823,8 +842,9 @@ export class WsAdapter implements WebSocketAdapter {
 }
 ```
 ???
-Если вы не хотите использовать socket.io, а хотите, к примеру, нативные веб-сокеты.
-Все что надо - это написать свой класс который реализовывает интерфейс `WebSocketAdapter`.
+Если вы не хотите использовать socket.io, а хотите, к примеру, нативные веб-сокеты.  
+Все что надо - это написать свой класс который реализовывает интерфейс `WebSocketAdapter`, с 3-мя методами.  
+Выглядит он примерно так.
 ---
 # Microservices
 ![](https://docs.nestjs.com/assets/Microservices_1.png)
@@ -833,7 +853,7 @@ export class WsAdapter implements WebSocketAdapter {
 Nest поддерживает 2 типа транспорта: TCP и Redis pub/sub, но ничто не мешает написать реализацию для другого протокола.
 Т.е. надо создать класс, которые реализовывает интерфейс `CustomTransportStrategy`.
 ---
-# Microservices Basics
+# Basics
 ```ts
 import { NestFactory } from '@nestjs/core';
 import { ApplicationModule } from './modules/app.module';
@@ -850,7 +870,7 @@ bootstrap();
 ???
 Чтобы создать микросервис надо вызвать `NestFactory.createMicroservice` 1-ый параметр модуль, 2-ой настройки микросервиса (транспорт, порт и т.д.)
 ---
-# Microservices Patterns
+# Patterns
 ```ts
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
@@ -864,3 +884,93 @@ export class MathController {
 }
 ```
 ???
+Микросервис разпознает сообщения с помощью патернов, это может быть строка или объект.
+Т.е. Чтобы метод контроллера, стал обработчиком этих сообщений, надо добавить декоратор `@MessagePattern()`
+---
+# Client
+```
+import { Controller, Get } from '@nestjs/common';
+import { Client, ClientProxy, Transport } from '@nestjs/microservices';
+
+@Controller()
+export class ClientController {
+    
+    @Client({ transport: Transport.TCP, port: 5667 })
+    client: ClientProxy;
+
+    @Get('client')
+    sendMessage(req, res) {
+        const pattern = { command: 'add' };
+        const data = [ 1, 2, 3, 4, 5 ];
+
+        this.client.send(pattern, data)
+            .catch((err) => Observable.empty())
+            .subscribe((result) => res.status(200).json({ result }));
+    }
+}
+```
+???
+Чтобы чтобы отправить в этот обработчик сообщение, нужен клиент. Создать его можно с помощью декоратора `@Client` с настройками сервера.
+Метод `send` у объекта `client` - отправляет данные и возвращает rxjs observable.
+---
+# Custom Transport
+```ts
+interface CustomTransportStrategy {
+    listen(callback: () => void): any;
+    close(): any;
+}
+```
+```ts
+export class RabbitMQServer extends Server implements CustomTransportStrategy {
+
+    constructor(private host: string, private queue: string) {
+        super();
+    }
+
+    // ...
+}
+```
+```ts
+const app = await NestFactory.createMicroservice(ApplicationModule, {
+    strategy: new RabbitMQServer('amqp://localhost', 'channel'),
+});
+```
+???
+Во фреймворк встроена поддержка только TCP и Redis, но коммуникацию по другой схеме можно написать самому.
+Надо реализовать интерфейс `CustomTransportStrategy`.
+---
+# Custom Client
+```ts
+abstract class ClientProxy {
+    protected abstract sendSingleMessage(msg: any, callback: (err, result, disposed?: boolean) => void): any;
+    send<T>(pattern: any, data: any): Observable<T>;
+    protected createObserver<T>(observer: Observer<T>): (err, result, disposed?: boolean) => void;
+}
+```
+```ts
+export class RabbitMQClient extends ClientProxy {
+  
+  constructor(private host: string, private queue: string) {
+      super();
+  }
+}
+```
+```ts
+this.client = new RabbitMQClient('amqp://localhost', 'example');
+```
+???
+И для этого кастомного транспорта нужен соответствующий клиент, который можно сделать отнаследовавшись от класса `ClientProxy`.
+---
+# NestJS CLI
+`@nestjs/schematics` Nestjs project and architecture element generation based on `@angular-devkit/schematics` engine.
+* Application
+* Controller
+* Exception
+* Guard
+* Interceptor
+* Middleware
+* Module
+* Pipe
+* Service
+???
+У nest.js есть консольный инструмент, которые позволяют генерировать различные компоненты для приложения: Controller, Interceptor и т.д.

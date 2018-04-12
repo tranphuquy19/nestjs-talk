@@ -47,6 +47,7 @@ h1 {
 	background: #eee;
     padding: 0 4px;
     border-radius: 4px;
+    white-space: nowrap;
 }
 
 .footnote {
