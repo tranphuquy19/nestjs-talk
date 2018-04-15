@@ -1,3 +1,40 @@
+---
+# Controller
+The controllers layer is responsible for handling incoming HTTP requests.
+```typescript
+import { Controller, Get } from '@nestjs/common';
+
+@Controller()
+export class UsersController {
+	
+	@Get('users')
+	getAllUsers() {
+		return [];
+	}
+}
+```
+???
+Контроллер это класс, с декоратором Controller.  
+КонтрОлеры принимают http request и их обрабатывают.  
+На методы можно добавить декораторы get, post, delete и т.п.
+---
+# Component
+
+```typescript
+import { Component } from '@nestjs/common';
+
+@Component()
+export class UsersService {
+
+	getAllUsers() {
+		return [];
+	}
+}
+```
+???
+Классы с декоратором @Component это будут сервисы, репозитории, фабрики, хелперы и т.п.  
+Эти компоненты могут быть инжектированы в контрОллеры и другие компоненты. 
+---
 
 # Global Filters
 ```typescript
