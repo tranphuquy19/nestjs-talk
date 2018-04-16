@@ -341,7 +341,7 @@ export class UsersModule { }
 export class ApplicationModule { }
 ```
 ???
-Модуль - это обычный класс с декоратором Module.  
+Мы можем объеденить все что у нас относится к работе с пользователями в отедльный модуль, и мпорртировать
 Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве `exports`.
 ---
 # Middlewares
@@ -742,3 +742,5 @@ const userController = module.get<UserController>(UserController);
 * https://kamilmysliwiec.com/nest-release-canditate-is-here-introduction-modern-node-js-framework
 * https://github.com/juliandavidmr/awesome-nest
 * https://angularcamp.tech/workshops/scalable-nodejs-with-nest/
+???
+На этом всё.
