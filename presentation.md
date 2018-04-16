@@ -81,6 +81,22 @@ Dependency Injection, несколько слоев (Exception Layer, Guards, In
 КонтрОллеры ответственны за обработку запроса, и выдачи ответа клиенту.  
 Компоненты - это все остальное, т.е. любые сервисы.
 ---
+# Modules
+```ts
+import { Module } from '@nestjs/common';
+
+@Module({})
+export class ApplicationModule { }
+```
+???
+Модуль это класс с декоратором `@Module`.
+Любое приложение, должно иметь хотя бы один модуль, модули могут импортировать другие модули.
+---
+# Modules
+![](https://docs.nestjs.com/assets/Modules_1.png)
+???
+Такм образом, структура приложения получается как дерево модулей.
+---
 # Setup Application
 ```typescript
 import { Module } from '@nestjs/common';
@@ -304,7 +320,7 @@ export class ApplicationModule { }
 ???
 И как и в остальных случаях, сервис надо добавить в модуль.  
 ---
-# Module
+# UsersModule
 By default, modules **encapsulate** each dependency. It means, that it is not possible to use its components / controllers outside module.
 ```typescript
 import { Module } from '@nestjs/common';
@@ -611,7 +627,7 @@ export class RolesGuard implements CanActivate {
 ???
 Guard это класс с соответствующим декоратором и реализует CanActivate интерфейс с одним методом `canActivate`.  
 Этот метод выполняется после мидлваров, но до пайпов.
-Если возвращается false (синхронно или асинхронно), то клиенту вернется вернется 403 ошибка.  
+Если возвращается `false` (синхронно или асинхронно), то клиенту вернется вернется 403 ошибка.  
 Аргументы в методе, такие же как в интерсепторе - HttpRequest или данные, и объект со ссылками на метод и контрОллер.
 ---
 # Guards Usage
@@ -639,7 +655,7 @@ app.useGlobalGuards(new RolesGuard());
 * Pipe
 * Service
 ???
-У nest.js есть консольный инструмент, которые позволяют генерировать различные компоненты для приложения: Controller, Interceptor и т.д.
+У nest.js есть консольный инструмент, с помощью него можно генерировать компоненты для приложения: Controller, Interceptor и т.д.
 ---
 # Socket Gateway
 ```typescript
@@ -663,9 +679,8 @@ export class EventsGateway {
 } 
 ```
 ???
-С вебсокетами работать очень просто, у нас есть декоратор `WebSocketGateway`, `WebSocketServer`.
-И `SubscribeMessage` - подписка на событие. Здесь мы подписываемся на событие `events`.
-Под капотом, `@WebSocketServer` это socket.io server.
+С вебсокетами работать очень просто, у нас есть декоратор `WebSocketGateway`, `WebSocketServer` (фактически это инкапсулированный socket.io сервер).
+Декоратор `SubscribeMessage` - подписка на событие. Здесь мы подписываемся на событие `events`.
 Можно написать свой адаптер, и работать с нативными веб-сокетами или с чем-то другим.
 ---
 # Microservices
@@ -723,6 +738,7 @@ const userController = module.get<UserController>(UserController);
 
 * https://nestjs.com/
 * https://unlight.github.io/nestjs-talk/presentation.html
+* https://videoportal.epam.com/video/PoAXPZa8
 * https://kamilmysliwiec.com/nest-release-canditate-is-here-introduction-modern-node-js-framework
 * https://github.com/juliandavidmr/awesome-nest
 * https://angularcamp.tech/workshops/scalable-nodejs-with-nest/
