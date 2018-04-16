@@ -2,7 +2,7 @@
 
 body {
 	font-family: 'Source Sans Pro', sans-serif;
-	font-size: 23px;
+	font-size: 24px;
 }
 
 img {
@@ -22,7 +22,7 @@ code {
 }
 
 h1 {
-    margin: 4% 0;
+    margin: 4% 0 2% 0;
 }
 
 .column-count-2 {
@@ -60,15 +60,19 @@ h1 {
 }
 
 .remark-slide-content h1 {
-	font-size: 275%; /* 55px */
+	font-size: 250%;
 }
 
 .remark-slide-content h2 {
-	font-size: 225%; /* 45px */
+	font-size: 200%;
 }
 
 .remark-slide-content h3 {
-	font-size: 175%; /* 35px */
+	font-size: 150%;
+}
+
+.remark-slide-content h4 {
+	font-size: 100%;
 }
 
 .float {

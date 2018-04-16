@@ -1,9 +1,7 @@
 class: center, middle, inverse
 background-image: url(https://nestjs.com/img/cat-header.png)
 # Nest.js Overview
-.footnote[March 2018]
-???
-Ф. = фреймворк;
+.footnote[May 2018]
 ---
 # Content
 .column-count-2[
@@ -44,7 +42,7 @@ which helps you effortlessly build efficient, scalable applications.
 It uses modern JavaScript, is built with TypeScript and combines best concepts of both OOP (Object Oriented Progamming) and FP (Functional Programming).
 ???
 Nest.js это современный backend ф., написан на TypeScript и активно использует декораторы.  
-Писать приложения можно TypeScript, можно на JavaScript, но рекомендуется TypeScript (потому что сам ф. на нем написан).  
+Писать приложения можно TypeScript, можно на JavaScript, но рекомендуется TypeScript (потому что сам фреймворк на нем написан).  
 ---
 # Philosophy
 The core concept of Nest is to provide an **architecture**.  
@@ -68,7 +66,7 @@ Nest стремится предоставить архитектуру прил
 * Websockets
 * Microservices
 ???
-Какие фичи ф. предоставляет:  
+Какие фичи фреймворк предоставляет:  
 Основан на express, поэтому вся экосистема express в вашем распоряжении.  
 Dependency Injection, несколько слоев (Exception Layer, Guards, Interceptors, Pipes)  
 Инструменты для тестирования, вебсокеты и микросервисы из коробки.
@@ -82,24 +80,6 @@ Dependency Injection, несколько слоев (Exception Layer, Guards, In
 Модули - это какая инкапсулированная часть приложения, например, пользователи.  
 КонтрОллеры ответственны за обработку запроса, и выдачи ответа клиенту.  
 Компоненты - это все остальное, т.е. любые сервисы.
----
-# Module
-By default, modules **encapsulate** each dependency. It means, that it is not possible to use its components / controllers outside module.
-```typescript
-import { Module } from '@nestjs/common';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-
-@Module({
-    controllers: [UsersController],
-    components: [UsersService],
-    exports: [UsersService],
-})
-export class UsersModule { }
-```
-???
-Модуль - это обычный класс с декоратором Module.  
-Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве `exports`.
 ---
 # Setup Application
 ```typescript
@@ -120,7 +100,7 @@ app.listen(3000, () => console.log('Application is listening on port 3000'));
 Вторым параметром, иожно передать инстанс экспресса.
 Приложение запустится, но оно пустое, оно не будет делать ничего полезного, т.к. нет контрОллеров.
 ---
-# First Controller
+# Controller
 ```typescript
 import { Controller, Get, Post } from '@nestjs/common';
 
@@ -323,6 +303,30 @@ export class ApplicationModule { }
 ```
 ???
 И как и в остальных случаях, сервис надо добавить в модуль.  
+---
+# Module
+By default, modules **encapsulate** each dependency. It means, that it is not possible to use its components / controllers outside module.
+```typescript
+import { Module } from '@nestjs/common';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+
+@Module({
+    controllers: [UsersController],
+    components: [UsersService],
+    exports: [UsersService],
+})
+export class UsersModule { }
+```
+```ts
+@Module({
+    imports: [UsersModule],
+})
+export class ApplicationModule { }
+```
+???
+Модуль - это обычный класс с декоратором Module.  
+Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве `exports`.
 ---
 # Middlewares
 ![](https://docs.nestjs.com/assets/Middlewares_1.png)
@@ -716,3 +720,9 @@ const userController = module.get<UserController>(UserController);
 С помощью метода `get` можно получить любой инстанс и протестировать его.
 ---
 # End of Overview
+
+* https://nestjs.com/
+* https://unlight.github.io/nestjs-talk/#1
+* https://kamilmysliwiec.com/nest-release-canditate-is-here-introduction-modern-node-js-framework
+* https://github.com/juliandavidmr/awesome-nest
+* https://angularcamp.tech/workshops/scalable-nodejs-with-nest/
