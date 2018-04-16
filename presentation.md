@@ -722,7 +722,7 @@ const userController = module.get<UserController>(UserController);
 # End of Overview
 
 * https://nestjs.com/
-* https://unlight.github.io/nestjs-talk/#1
+* https://unlight.github.io/nestjs-talk/presentation.html
 * https://kamilmysliwiec.com/nest-release-canditate-is-here-introduction-modern-node-js-framework
 * https://github.com/juliandavidmr/awesome-nest
 * https://angularcamp.tech/workshops/scalable-nodejs-with-nest/

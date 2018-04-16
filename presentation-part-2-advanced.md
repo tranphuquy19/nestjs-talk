@@ -1,4 +1,3 @@
----
 # Advanced Nest
 .column-count-2[
 * Websockets
@@ -214,4 +213,3 @@ this.client = new RabbitMQClient('amqp://localhost', 'example');
 ```
 ???
 И для этого кастомного транспорта нужен соответствующий клиент, который можно сделать отнаследовавшись от класса `ClientProxy`.
----
