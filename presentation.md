@@ -1,7 +1,7 @@
 class: center, middle, inverse
 background-image: url(https://nestjs.com/img/cat-header.png)
 # Nest.js Overview
-.footnote[May 2018]
+.footnote[Apr 2018]
 ---
 # Content
 .column-count-2[
@@ -41,7 +41,7 @@ Nest is a powerful web framework for Node.js,
 which helps you effortlessly build efficient, scalable applications.
 It uses modern JavaScript, is built with TypeScript and combines best concepts of both OOP (Object Oriented Progamming) and FP (Functional Programming).
 ???
-Nest.js это современный backend ф., написан на TypeScript и активно использует декораторы.  
+Nest.js это современный backend фреймворк, написан на TypeScript и активно использует декораторы.  
 Писать приложения можно TypeScript, можно на JavaScript, но рекомендуется TypeScript (потому что сам фреймворк на нем написан).  
 ---
 # Philosophy
@@ -50,7 +50,7 @@ Which helps developers to accomplish maximum separation of layers and increase a
 ???
 Философия nest.js - это архитектура.  
 Nest стремится предоставить архитектуру приложения из коробки, что позволяет разработчику делать максимальное разделение слоев
-и увеличивать абстракицию в приложениях, и разрабатывать слабо связанные компоненты.
+и увеличивать абстракцию в приложениях, и создавать слабо связанные компоненты.
 ---
 # Features
 * Based on express.js and socket.io
@@ -74,7 +74,7 @@ Dependency Injection, несколько слоев (Exception Layer, Guards, In
 # Core Concepts
 * **Modules** - logical part of the application which lives within the same domain boundary
 * **Controlers** - is responsible for handling incoming requests, and return a response to the client
-* **Components** - almost everything is a component – service, repository, provider etc.
+* **Components** - almost everything is a component – service, repository, provider, etc.
 ???
 Строительные блоки для приложения.
 Модули - это какая инкапсулированная часть приложения, например, пользователи.  
@@ -95,7 +95,7 @@ export class ApplicationModule { }
 # Modules
 ![](https://docs.nestjs.com/assets/Modules_1.png)
 ???
-Такм образом, структура приложения получается как дерево модулей.
+Таким образом, структура приложения получается как дерево модулей.
 ---
 # Setup Application
 ```typescript
@@ -113,7 +113,7 @@ app.listen(3000, () => console.log('Application is listening on port 3000'));
 ```
 ???
 Итак, чтобы запустить nest.js приложение, нужно создать как минимум один модуль передать его в `NestFactory.create()`
-Вторым параметром, иожно передать инстанс экспресса.
+Вторым параметром, можно передать инстанс экспресса.
 Приложение запустится, но оно пустое, оно не будет делать ничего полезного, т.к. нет контрОллеров.
 ---
 # Controller
@@ -214,7 +214,7 @@ export class UsersController {
 ]
 ???
 Вот этот список декораторов-оберток над объектами express.
-Т.е. мы можем достать разные свойства из request body, headers и других свойств.
+Т.е. мы можем достать разные свойства из request body, equest headers и других свойств.
 Если этого недостаточно...
 ---
 # Custom Decorators
@@ -282,7 +282,7 @@ export class UsersController {
     }
 ```
 ???
-И теперь мы может заинжектить его в контрОллер.  
+И теперь мы можем заинжектить этот компонент в контрОллер.  
 Из метода можно вернуть объект или массив, и результат будет автоматически преобразован в json, и будут выставлены соответствующие заголовки.  
 Это второй и рекомендуемый способ выдачи ответа клиента. (На слайде [15](#p15) нерекомендуемый способ)   
 Приложение все еще не будет работать, как надо...
@@ -341,7 +341,7 @@ export class UsersModule { }
 export class ApplicationModule { }
 ```
 ???
-Мы можем объеденить все что у нас относится к работе с пользователями в отедльный модуль, и мпорртировать
+Мы можем объеденить все что у нас относится к работе с пользователями в отдельный модуль, и импортировать его ApplicationModule.
 Все компоненты этого модуля доступны только внутри этого модуля и недоступны снаружи, до тех пор пока явно это не укажем в свойстве `exports`.
 ---
 # Middlewares
