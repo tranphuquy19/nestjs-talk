@@ -3,7 +3,7 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 # Nest.js Overview
 .footnote[Apr 2018]
 ---
-# Content
+# Contents
 .column-count-2[
 * Philosophy
 * Features
@@ -40,6 +40,9 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 Nest is a powerful web framework for Node.js,
 which helps you effortlessly build efficient, scalable applications.
 It uses modern JavaScript, is built with TypeScript and combines best concepts of both OOP (Object Oriented Progamming) and FP (Functional Programming).
+
+https://nestjs.com/
+
 ???
 Nest.js это современный backend фреймворк, написан на TypeScript и активно использует декораторы.  
 Писать приложения можно TypeScript, можно на JavaScript, но рекомендуется TypeScript (потому что сам фреймворк на нем написан).  
@@ -684,6 +687,25 @@ export class EventsGateway {
 Можно написать свой адаптер, и работать с нативными веб-сокетами или с чем-то другим.
 ---
 # Microservices
+```ts
+import { NestFactory } from '@nestjs/core';
+import { ApplicationModule } from './modules/app.module';
+import { Transport } from '@nestjs/microservices';
+
+async function bootstrap() {
+  const app = await NestFactory.createMicroservice(ApplicationModule, {
+    transport: Transport.TCP,
+  });
+  app.listen(() => console.log('Microservice is listening'));
+}
+bootstrap();
+```
+???
+Микросервисы. Это модное сегодня слово, но в контексте nest микросервисы - это те же приложения, только работают они не по HTTP, а по какому-то другому протоколу.
+Nest поддерживает 2 типа транспорта: TCP и Redis pub/sub, но ничто не мешает написать другую реализацию.
+Чтобы создать микросервис надо вызвать `NestFactory.createMicroservice` 1-ый параметр модуль, 2-ой настройки микросервиса (транспорт, порт и т.д.)
+---
+# Microservices
 ```typescript
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { ClientProxy, Client, Transport, MessagePattern } from '@nestjs/microservices';
@@ -702,7 +724,7 @@ export class MathController {
     return this.client.send<number>(pattern, data);
   }
 
-  // In microservice
+  // In microservice...
   @MessagePattern({ cmd: 'sum' })
   sum(data: number[]): number {
     return (data || []).reduce((a, b) => a + b);
@@ -710,7 +732,7 @@ export class MathController {
 }
 ```
 ???
-Как выглядит микросервисы. К примеру, есть какой-то сервис который общается по TCP, порт 43210.
+К примеру, есть какой-то сервис который общается по TCP, порт 43210.
 Мы берем контрОллер, настраиваем декоратор `@Client`.
 Отправляем сервису команду `sum` с данными, в сервисе будет вызван метод, который декорирован `@MessagePattern` с нашей командой `sum`.
 ---
@@ -737,6 +759,7 @@ const userController = module.get<UserController>(UserController);
 # End of Overview
 
 * https://nestjs.com/
+* https://docs.nestjs.com/v5/
 * https://unlight.github.io/nestjs-talk/presentation.html
 * https://videoportal.epam.com/video/PoAXPZa8
 * https://kamilmysliwiec.com/nest-release-canditate-is-here-introduction-modern-node-js-framework

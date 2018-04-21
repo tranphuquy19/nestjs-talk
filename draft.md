@@ -1,3 +1,14 @@
+# Road to version 5
+* https://github.com/nestjs/nest/pull/489
+* https://docs.nestjs.com/v5/
+* Switch from `@Component()`, `@Middleware()`, `@Interceptor()`, and `@Guard()` to `@Injectable()`
+* HTTP server independence (could be used with such libraries like fastify, polka, or connect)
+* Development experience HMR webpack (even 300% faster rebuilds)
+* Mcroservices - new strategies - NATS, MQTT, and GRPC
+???
+
+---
+
 # Controller
 The controllers layer is responsible for handling incoming HTTP requests.
 ```typescript
@@ -99,7 +110,3 @@ Modules: The @Module() decorator provides metadata, which Nest uses to organize 
 Controllers: The controllers layer is responsible for handling incoming requests, and return a response to the client.
 Components: Almost everything is a component – Service, Repository, Factory, Helper […] and they can be injected into controllers or into other components through constructor.
 ---
-
-# Nest v5 roadmap
-???
-https://github.com/nestjs/nest/pull/489
