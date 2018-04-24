@@ -613,7 +613,7 @@ context - это объект с двумя свойствами: parent (ссы
 Единственная задача гвардов - это ответить на вопрос,
 может ли метод контрОллера обработать текущий HttpRequest.
 ---
-# RolesGuard
+# RolesGuard Example
 ```typescript
 import { Guard, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs/Observable';
