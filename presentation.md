@@ -23,6 +23,8 @@ background-image: url(https://nestjs.com/img/cat-header.png)
 ???
 Сегодня будет обзор фрейморка nest, посмотрим его идею и основные концепции.
 Буду рассказывать про версия 4, сейчас в разработке 5 в данный момент бета, но изменения не критичные (какие-то декаораторы переименовались)
+https://github.com/nestjs/nest/releases/tag/v5.0.0-beta.0
+DI everywhere
 ---
 # About Project Author
 .float[
@@ -736,6 +738,7 @@ export class MathController {
 К примеру, есть какой-то сервис который общается по TCP, порт 43210.
 Мы берем контрОллер, настраиваем декоратор `@Client`.
 Отправляем сервису команду `sum` с данными, в сервисе будет вызван метод, который декорирован `@MessagePattern` с нашей командой `sum`.
+В версии 5 добавилась поддержка: Nats, MQTT, gRPC
 ---
 # Unit Testing
 ```typescript
