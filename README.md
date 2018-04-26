@@ -2,6 +2,7 @@
 * https://unlight.github.io/nestjs-talk/presentation.html
 
 ## Resources
+* https://nestjs.com/
 * https://docs.nestjs.com/
 * https://www.youtube.com/watch?v=Z9KkMRd8Blc
 * https://docs.google.com/document/d/1Y3RkaFEdumLBVpkTatNbN7jJH0aUvsTpq1LlntdYRrM/edit
